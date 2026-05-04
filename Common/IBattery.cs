@@ -8,10 +8,13 @@ using System.Threading.Tasks;
 namespace Common
 {
     [ServiceContract]
-    public interface ILibrary
+    public interface IBattery
     {
+        [OperationContract]
         void StartSession(EisMeta eisMeta);
-        void PushSample(EisSample eisSample); 
+        [OperationContract]
+        void PushSample(EisSample eisSample);
+        [OperationContract]
         void EndSession();
     }
 }
