@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Service
 {
-    internal class BatteryService : IBattery
+    public class BatteryService : IBattery
     {
         public void EndSession()
         {
