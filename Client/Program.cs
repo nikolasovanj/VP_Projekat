@@ -12,9 +12,9 @@ namespace Client
     {
         static void Main(string[] args)
         {
-            ChannelFactory<ILibrary> factory = new ChannelFactory<ILibrary>("LibraryService");
+            ChannelFactory<IBattery> factory = new ChannelFactory<IBattery>("BatteryService");
 
-            ILibrary proxy = factory.CreateChannel();
+            IBattery proxy = factory.CreateChannel();
         }
     }
 }

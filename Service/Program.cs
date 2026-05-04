@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Service
 {
-    internal class Program
+    public class Program
     {
         static void Main(string[] args)
         {
-            ServiceHost host = new ServiceHost(typeof(LibraryService));
+            ServiceHost host = new ServiceHost(typeof(BatteryService));
             host.Open();
 
             Console.WriteLine("Service is open, press any key to close it.");
