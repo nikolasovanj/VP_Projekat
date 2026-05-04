@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -10,8 +11,8 @@ namespace Common
     [DataContract]
     public enum Test
     {
-        [EnumMember] Test_1,
-        [EnumMember] Test_2
+        [EnumMember] Test_1=1,
+        [EnumMember] Test_2=2
     }
     [DataContract]
     public class EisMeta

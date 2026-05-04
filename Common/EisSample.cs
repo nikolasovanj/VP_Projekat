@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -14,16 +15,22 @@ namespace Common
         float frequencyHz;
         float r_ohm;
         float x_ohm;
+        float v;
         int t_degC;
-        int range_ohm;
+        float range_ohm;
         DateTime timestampLocal;
 
-        public EisSample(int rowIndex, float frequencyHz, float r_ohm, float x_ohm, int degC, int range_ohm, DateTime timestampLocal)
+        public EisSample()
+        {
+        }
+
+        public EisSample(int rowIndex, float frequencyHz, float r_ohm, float x_ohm, float v, int degC, float range_ohm, DateTime timestampLocal)
         {
             RowIndex = rowIndex;
             FrequencyHz = frequencyHz;
             R_ohm = r_ohm;
             X_ohm = x_ohm;
+            V = v;
             T_degC = degC;
             Range_ohm = range_ohm;
             TimestampLocal = timestampLocal;
@@ -37,9 +44,11 @@ namespace Common
         [DataMember]
         public float X_ohm { get => x_ohm; set => x_ohm = value; }
         [DataMember]
+        public float V { get =>  v; set => v = value; }
+        [DataMember]
         public int T_degC { get => t_degC; set => t_degC = value; }
         [DataMember]
-        public int Range_ohm { get => range_ohm; set => range_ohm = value; }
+        public float Range_ohm { get => range_ohm; set => range_ohm = value; }
         [DataMember]
         public DateTime TimestampLocal { get => timestampLocal; set => timestampLocal = value; }
     }
