@@ -10,9 +10,6 @@ namespace Common
     [DataContract]
     public class EisSample
     {
-
-        /*RowIndex, FrequencyHz, R_ohm, X_ohm, T_degC,
-Range_ohm, TimestampLocal.*/
         int rowIndex = 1;
         float frequencyHz;
         float r_ohm;

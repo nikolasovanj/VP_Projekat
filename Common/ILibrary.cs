@@ -10,6 +10,8 @@ namespace Common
     [ServiceContract]
     public interface ILibrary
     {
-        
+        void StartSession(EisMeta eisMeta);
+        void PushSample(EisSample eisSample); 
+        void EndSession();
     }
 }
