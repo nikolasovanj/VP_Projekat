@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Common
 {
     [DataContract]
-    public class CustomException
+    public class CustomException: Exception
     {
         string message;
 

@@ -1,10 +1,12 @@
 ﻿using Common;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.ServiceModel;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Client
@@ -14,26 +16,47 @@ namespace Client
         static void Main(string[] args)
         {
             ChannelFactory<IBattery> factory = new ChannelFactory<IBattery>("BatteryService");
-
             IBattery proxy = factory.CreateChannel();
 
-            EisMeta meta = FileManipulation.CreateMeta("../../../Dataset");
-            Console.WriteLine($"Battery id: {meta.BatteryId}\nFile name: {meta.FileName}\nTest id: {meta.TestId}\nSoC: {meta.SoC}\nRows: {meta.TotalRows}");
-            string[] lines = File.ReadAllLines($"../../../Dataset/{meta.BatteryId}/EIS measurements/{meta.TestId}/Hioki/{meta.FileName}");
-            List<EisSample> samples = new List<EisSample>();
-            for (int i = 1; i < meta.TotalRows; i++) 
+            string datasetPath = ConfigurationManager.AppSettings["dataset"];
+            EisMeta meta = EisMeta.CreateMeta(datasetPath);
+            SampleReader sr = new SampleReader(meta);
+            int temp = 0;
+            while (true)
             {
-                samples.Add(FileManipulation.CreateSample(i-1, lines[i]));
+                temp = PrintMenu();
+                if (temp == 2) break;
+                if (temp == -1) continue;
+                try
+                {
+                    proxy.StartSession(meta);
+                    List<EisSample> samples = sr.CreateSampleFromMeta() as List<EisSample>;
+                    sr.Dispose();
+                    foreach (var sample in samples) 
+                    { proxy.PushSample(sample); }
+
+                    proxy.EndSession();
+                }
+                catch
+                {
+                    sr.Dispose();
+                    Console.WriteLine("Server closed");
+                }
+
             }
-            foreach (var sample in samples) 
-            { Console.WriteLine(sample.FrequencyHz); }
-
         }
 
-        private static bool CheckSample(EisSample sample)
+        private static int PrintMenu()
         {
-            if (sample.FrequencyHz <= 0) return false;
-            return true;
+            Console.WriteLine("1. Send samples\n2. Exit");
+            Console.Write("Choose action: ");
+            if(int.TryParse(Console.ReadLine(), out int ret))
+            {
+                return ret;
+            }
+            return -1;
         }
+
+        
     }
 }

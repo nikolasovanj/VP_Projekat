@@ -48,6 +48,7 @@
     <Compile Include="EisSample.cs" />
     <Compile Include="IBattery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SampleReader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

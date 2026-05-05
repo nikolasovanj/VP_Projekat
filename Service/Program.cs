@@ -11,14 +11,15 @@ namespace Service
     {
         static void Main(string[] args)
         {
-            ServiceHost host = new ServiceHost(typeof(BatteryService));
-            host.Open();
-
-            Console.WriteLine("Service is open, press any key to close it.");
-            Console.ReadKey();
-
-            host.Close();
+            using (ServiceHost host = new ServiceHost(typeof(BatteryService)))
+            {
+                host.Open();
+                Console.WriteLine("Service is open, press any key to close it.");
+                Console.ReadKey();
+                host.Close();
+            }
             Console.WriteLine("Service is closed");
+            Console.ReadKey();
         }
     }
 }

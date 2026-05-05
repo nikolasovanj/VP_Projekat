@@ -11,17 +11,17 @@ namespace Service
     {
         public void EndSession()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("End");
         }
 
         public void PushSample(EisSample eisSample)
         {
-            throw new NotImplementedException();
+            Console.WriteLine(eisSample.FrequencyHz);
         }
 
         public void StartSession(EisMeta eisMeta)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Start");
         }
     }
 }

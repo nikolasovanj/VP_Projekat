@@ -11,8 +11,8 @@ namespace Common
     [DataContract]
     public enum Test
     {
-        [EnumMember] Test_1=1,
-        [EnumMember] Test_2=2
+        [EnumMember] Test_1,
+        [EnumMember] Test_2
     }
     [DataContract]
     public class EisMeta
@@ -32,6 +32,26 @@ namespace Common
             TotalRows = totalRows;
         }
 
+        private EisMeta(string path)
+        {
+            string[] dirs = Directory.GetDirectories(path);
+            Random rand = new Random();
+            path = dirs[rand.Next(dirs.Length)];
+            BatteryId = path.Split('\\')[1];
+
+            dirs = Directory.GetDirectories(path + "/EIS measurements");
+            path = dirs[rand.Next(dirs.Length)];
+            TestId = path.Split('_')[1].Equals("1") ? Test.Test_1 : Test.Test_2;
+
+            string[] files = Directory.GetFiles(path + "/Hioki");
+            path = files[rand.Next(files.Length)];
+            TotalRows = File.ReadLines(path).Count();
+
+            FileName = path.Split('\\')[3];
+
+            SoC = int.Parse(FileName.Split('_')[3]);
+        }
+
         [DataMember]
         public string BatteryId { get => batteryId; set => batteryId = value; }
         [DataMember]
@@ -42,5 +62,19 @@ namespace Common
         public string FileName { get => fileName; set => fileName = value; }
         [DataMember]
         public int TotalRows { get => totalRows; set => totalRows = value; }
+
+        public static EisMeta CreateMeta(string path)
+        {
+            EisMeta meta = new EisMeta();
+            try
+            {
+                meta = new EisMeta(path);
+            }
+            catch (CustomException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return meta;
+        }
     }
 }
