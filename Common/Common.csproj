@@ -49,6 +49,7 @@
     <Compile Include="IBattery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleReader.cs" />
+    <Compile Include="SessionWriter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

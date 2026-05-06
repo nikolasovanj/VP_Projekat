@@ -19,6 +19,7 @@ namespace Common
         int t_degC;
         float range_ohm;
         DateTime timestampLocal;
+        string file;
 
         public EisSample() { }
 
@@ -36,7 +37,6 @@ namespace Common
 
         private EisSample(int row, string line)
         {
-
             string[] parts = line.Split(',');
             RowIndex = row;
             FrequencyHz = float.Parse(parts[0]);
@@ -45,6 +45,7 @@ namespace Common
             V = float.Parse(parts[3]);
             T_degC = int.Parse(parts[4]);
             Range_ohm = float.Parse(parts[5]);
+            TimestampLocal = DateTime.Now;
         }
 
         [DataMember]
@@ -56,13 +57,42 @@ namespace Common
         [DataMember]
         public float X_ohm { get => x_ohm; set => x_ohm = value; }
         [DataMember]
-        public float V { get =>  v; set => v = value; }
+        public float V { get => v; set => v = value; }
         [DataMember]
         public int T_degC { get => t_degC; set => t_degC = value; }
         [DataMember]
         public float Range_ohm { get => range_ohm; set => range_ohm = value; }
         [DataMember]
         public DateTime TimestampLocal { get => timestampLocal; set => timestampLocal = value; }
+        [DataMember]
+        public string File { get => file; set => file = value; }
+
+        private bool disposed = false;
+        ~EisSample()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    if (file != null)
+                    {
+
+                    }
+                }
+                disposed = true;
+            }
+        }
         public static EisSample CreateSample(int row, string line)
         {
             EisSample sample = new EisSample();
@@ -71,10 +101,19 @@ namespace Common
                 sample = new EisSample(row, line);
             }
             catch (CustomException ex)
-            { 
+            {
                 Console.WriteLine(ex.Message);
             }
             return sample;
+        }
+
+        public string ToCSV()
+        {
+            return $"{RowIndex},{FrequencyHz},{R_ohm},{X_ohm},{V},{T_degC},{Range_ohm},{TimestampLocal}\n";
+        }
+        public string ToCSVHeader()
+        {
+            return $"{nameof(RowIndex)},{nameof(FrequencyHz)},{nameof(R_ohm)},{nameof(X_ohm)},{nameof(V)},{nameof(T_degC)},{nameof(Range_ohm)},{nameof(TimestampLocal)}\n";
         }
     }
 }

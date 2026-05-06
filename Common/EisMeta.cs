@@ -32,24 +32,28 @@ namespace Common
             TotalRows = totalRows;
         }
 
-        private EisMeta(string path)
+        private EisMeta(bool create)
         {
-            string[] dirs = Directory.GetDirectories(path);
-            Random rand = new Random();
-            path = dirs[rand.Next(dirs.Length)];
-            BatteryId = path.Split('\\')[1];
+            if (create)
+            { 
+                string path = "../../../Dataset";
+                string[] dirs = Directory.GetDirectories(path);
+                Random rand = new Random(DateTime.UtcNow.Millisecond);
+                path = dirs[rand.Next(dirs.Length)];
+                BatteryId = path.Split('\\')[1];
 
-            dirs = Directory.GetDirectories(path + "/EIS measurements");
-            path = dirs[rand.Next(dirs.Length)];
-            TestId = path.Split('_')[1].Equals("1") ? Test.Test_1 : Test.Test_2;
+                dirs = Directory.GetDirectories(path + "/EIS measurements");
+                path = dirs[rand.Next(dirs.Length)];
+                TestId = path.Split('_')[1].Equals("1") ? Test.Test_1 : Test.Test_2;
 
-            string[] files = Directory.GetFiles(path + "/Hioki");
-            path = files[rand.Next(files.Length)];
-            TotalRows = File.ReadLines(path).Count();
+                string[] files = Directory.GetFiles(path + "/Hioki");
+                path = files[rand.Next(files.Length)];
+                TotalRows = File.ReadLines(path).Count();
 
-            FileName = path.Split('\\')[3];
+                FileName = path.Split('\\')[3];
 
-            SoC = int.Parse(FileName.Split('_')[3]);
+                SoC = int.Parse(FileName.Split('_')[3]);
+            }
         }
 
         [DataMember]
@@ -63,18 +67,17 @@ namespace Common
         [DataMember]
         public int TotalRows { get => totalRows; set => totalRows = value; }
 
-        public static EisMeta CreateMeta(string path)
+        public static EisMeta CreateMeta()
         {
-            EisMeta meta = new EisMeta();
             try
             {
-                meta = new EisMeta(path);
+                return new EisMeta(true);
             }
             catch (CustomException ex)
             {
                 Console.WriteLine(ex.Message);
+                return new EisMeta(false);
             }
-            return meta;
         }
     }
 }

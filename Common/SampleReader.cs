@@ -10,12 +10,21 @@ namespace Common
     public class SampleReader: IDisposable
     {
         private TextReader textReader;
-        private bool disposed = false;
+        private int row = 0;
         public string Path { get; private set; }
+
         public SampleReader(EisMeta meta)
         {
             Path = $"../../../Dataset/{meta.BatteryId}/EIS measurements/{meta.TestId}/Hioki/{meta.FileName}";
+            textReader = File.OpenText(Path);
+            textReader.ReadLine();
         }
+
+        public SampleReader()
+        {
+        }
+
+        private bool disposed = false;
         ~SampleReader()
         {
             Dispose(false);
@@ -43,19 +52,13 @@ namespace Common
                 disposed = true;
             }
         }
-        public IEnumerable<EisSample> CreateSampleFromMeta()
+        public EisSample CreateSampleFromMeta(int row, string path)
         {
-            textReader = File.OpenText(Path);
-            List<EisSample> samples = new List<EisSample>();
-            string line;
-            int row = 0;
-            textReader.ReadLine();
-            while ((line = textReader.ReadLine()) != null)
-            {
-                row++;
-                samples.Add(EisSample.CreateSample(row, line));
-            }
-            return samples;
+            string line = textReader.ReadLine();
+            EisSample sample = EisSample.CreateSample(row, line); // TODO Checks
+            sample.File = path;
+            return sample;
+            
         }
 
     }
