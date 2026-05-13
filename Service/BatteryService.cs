@@ -13,10 +13,13 @@ namespace Service
     public class BatteryService : IBattery
     {
         private static SessionWriter _session = new SessionWriter();
+        private static EventGenerator _eventGenerator = new EventGenerator();
+        private static EventListener _listener = new EventListener();
         public void EndSession(string path)
         {
             _session.Files[path].Item1.Close();
             _session.Files[path].Item2.Close();
+            _eventGenerator.EndSession();
             Console.WriteLine($"End Session:\t{path.Substring(14)}");
         }
 
@@ -39,7 +42,13 @@ namespace Service
             
             return path;
         }
-
+        public void InitializeEvents()
+        {
+            _eventGenerator.OnTransferStarted += _listener.HandleEvent;
+            _eventGenerator.OnSampleRecieved += _listener.HandleEvent;
+            _eventGenerator.OnTransferCompleted += _listener.HandleEvent;
+            _eventGenerator.OnWarningRaised += _listener.HandleEvent;
+        }
         public void Close()
         {
             _session.Dispose();

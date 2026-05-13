@@ -15,6 +15,7 @@ namespace Service
             using (ServiceHost host = new ServiceHost(service))
             {
                 host.Open();
+                service.InitializeEvents();
                 Console.WriteLine("Service is open, press any key to close it.");
                 Console.ReadKey();
                 service.Close();
