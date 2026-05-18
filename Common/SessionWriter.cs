@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,8 +15,8 @@ namespace Common
         private readonly string _reject = "/reject.csv";
         private readonly string _default = "../../../Data";
 
-        private readonly double _R_range_min = 0.2;
-        private readonly double _R_range_max = 3.5;
+        private readonly double _R_range_min = double.Parse(ConfigurationManager.AppSettings["Range_min"]);
+        private readonly double _R_range_max = double.Parse(ConfigurationManager.AppSettings["Range_max"]);
 
         public Dictionary<string, Tuple<FileStream, FileStream>> Files { get { return files; } }
         public SessionWriter()

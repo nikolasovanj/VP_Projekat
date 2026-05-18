@@ -12,7 +12,7 @@ namespace Common
     [DataContract]
     public class EisSample
     {
-        int rowIndex = 1;
+        int rowIndex = -1;
         float frequencyHz;
         float r_ohm;
         float x_ohm;
