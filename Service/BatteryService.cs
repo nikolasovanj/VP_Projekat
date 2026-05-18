@@ -16,6 +16,10 @@ namespace Service
         private static SessionWriter _session = new SessionWriter();
         private static EventGenerator _eventGenerator = new EventGenerator();
         private static EventListener _listener = new EventListener();
+
+        private readonly double _temperature_difference_max = 3;
+        private double _temperature_previous = -999;
+
         public void EndSession(string path)
         {
             _session.Files[path].Item1.Close();
@@ -26,10 +30,25 @@ namespace Service
         public void PushSample(EisSample eisSample)
         {
             _eventGenerator.RecieveSample(ConfigurationManager.AppSettings["SampleRecieved"] + eisSample.RowIndex);
+            if(_temperature_previous == -999)
+            {
+                _temperature_previous = eisSample.T_degC;
+            }
+            else
+            {
+                if(eisSample.T_degC - _temperature_previous > _temperature_difference_max)
+                {
+                    _eventGenerator.TemperatureSpike("raising");
+                }
+                else if(eisSample.T_degC - _temperature_previous < -1 * _temperature_difference_max){
+                    _eventGenerator.TemperatureSpike("falling");
+                }
+            }
             Thread.Sleep(1000);
             _session.Write(eisSample);
            _eventGenerator.TransferComplete(ConfigurationManager.AppSettings["SampleComplete"] + eisSample.RowIndex);
             Thread.Sleep(500);
+            _temperature_previous = eisSample.T_degC;
         }
 
         public string StartSession(EisMeta eisMeta)
@@ -45,7 +64,7 @@ namespace Service
             _eventGenerator.OnTransferStarted += _listener.HandleEvent;
             _eventGenerator.OnSampleRecieved += _listener.HandleEvent;
             _eventGenerator.OnTransferCompleted += _listener.HandleEvent;
-            _eventGenerator.OnWarningRaised += _listener.HandleEvent;
+            _eventGenerator.OnTemperatureSpike += _listener.HandleEvent;
         }
         public void Close()
         {

@@ -18,9 +18,6 @@ namespace Common
         private readonly double _R_range_min = double.Parse(ConfigurationManager.AppSettings["Range_min"]);
         private readonly double _R_range_max = double.Parse(ConfigurationManager.AppSettings["Range_max"]);
 
-        private readonly double _temperature_difference_max = double.Parse(ConfigurationManager.AppSettings["T_threshold"]);
-        private double _temperature_previous = -1;
-
         public Dictionary<string, Tuple<FileStream, FileStream>> Files { get { return files; } }
         public SessionWriter()
         {
