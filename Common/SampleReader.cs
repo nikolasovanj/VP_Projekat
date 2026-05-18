@@ -11,6 +11,7 @@ namespace Common
     {
         private TextReader textReader;
         private int row = 0;
+
         public string Path { get; private set; }
 
         public SampleReader(EisMeta meta)
@@ -55,11 +56,10 @@ namespace Common
         public EisSample CreateSampleFromMeta(int row, string path)
         {
             string line = textReader.ReadLine();
-            EisSample sample = EisSample.CreateSample(row, line); // TODO Checks
+            EisSample sample = EisSample.CreateSample(row, line);
             sample.File = path;
             return sample;
             
         }
-
     }
 }

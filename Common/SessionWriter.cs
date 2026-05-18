@@ -14,6 +14,12 @@ namespace Common
         private readonly string _reject = "/reject.csv";
         private readonly string _default = "../../../Data";
 
+        private readonly double _R_range_min = 0.2;
+        private readonly double _R_range_max = 3.5;
+
+        private readonly double _temperature_difference_max = 3;
+        private double _temperature_previous = -1;
+
         public Dictionary<string, Tuple<FileStream, FileStream>> Files { get { return files; } }
         public SessionWriter()
         {
@@ -69,7 +75,7 @@ namespace Common
         }
         public void Write(EisSample sample)
         {
-            if (true) // TODO Checks
+            if (sample.Range_ohm > _R_range_min && sample.Range_ohm < _R_range_max)
             {
                 FileStream fs = files[sample.File].Item1;
                 if (fs.Position == 0) 
@@ -88,7 +94,11 @@ namespace Common
                     string header = "Timestamp,reason,RowIndex";
                     fs.Write(new UTF8Encoding(true).GetBytes(header), 0, header.Length);
                 }
-                string reason = "";
+                if (sample.Range_ohm < _R_range_min || sample.Range_ohm > _R_range_max)
+                {
+
+                }
+                string reason = "RangeMismatch";
                 string text = $"{sample.TimestampLocal},rejected: {reason},{sample.RowIndex}";
                 fs.Write(new UTF8Encoding(true).GetBytes(text), 0, text.Length);
             }

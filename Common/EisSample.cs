@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -39,21 +40,39 @@ namespace Common
         {
             string[] parts = line.Split(',');
             RowIndex = row;
-            FrequencyHz = float.Parse(parts[0]);
-            R_ohm = float.Parse(parts[1]);
-            X_ohm = float.Parse(parts[2]);
-            V = float.Parse(parts[3]);
-            T_degC = int.Parse(parts[4]);
-            Range_ohm = float.Parse(parts[5]);
+            float temp;
+            if (float.TryParse(parts[0], out temp)){ FrequencyHz = temp; }else{ throw new DataFormatFault("FrequencyHz"); }
+            if (float.TryParse(parts[1], out temp)) { R_ohm = temp; } else { throw new DataFormatFault("R_ohm"); }
+            if (float.TryParse(parts[2], out temp)) { X_ohm = temp; } else { throw new DataFormatFault("X_ohm"); }
+            if (float.TryParse(parts[3], out temp)) { V = temp; } else { throw new DataFormatFault("V"); }
+            if (float.TryParse(parts[4], out temp)) { T_degC = (int)temp; } else { throw new DataFormatFault("T_degC"); }
+            if (float.TryParse(parts[5], out temp)) { Range_ohm = (int)temp; } else { throw new DataFormatFault("Range_ohm"); }
             TimestampLocal = DateTime.Now;
         }
 
         [DataMember]
         public int RowIndex { get => rowIndex; set => rowIndex = value; }
         [DataMember]
-        public float FrequencyHz { get => frequencyHz; set => frequencyHz = value; }
+        public float FrequencyHz { get => frequencyHz; set
+            {
+                if (value <= 0)
+                {
+                    throw new ValidationFault("FrequencyHz");
+                }
+                frequencyHz = value;
+            }
+        }
         [DataMember]
-        public float R_ohm { get => r_ohm; set => r_ohm = value; }
+        public float R_ohm { get => r_ohm; set {
+                double R_ohm_min = 0.01;
+                double R_ohm_max = 2.5;
+                if(R_ohm_min > value || R_ohm_max > value)
+                {
+                    throw new ValidationFault("R_ohm");
+                }
+                r_ohm = value; 
+            } 
+        }
         [DataMember]
         public float X_ohm { get => x_ohm; set => x_ohm = value; }
         [DataMember]
@@ -83,13 +102,6 @@ namespace Common
         {
             if (!disposed)
             {
-                if (disposing)
-                {
-                    if (file != null)
-                    {
-
-                    }
-                }
                 disposed = true;
             }
         }
@@ -100,7 +112,11 @@ namespace Common
             {
                 sample = new EisSample(row, line);
             }
-            catch (CustomException ex)
+            catch (DataFormatFault ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            catch (ValidationFault ex)
             {
                 Console.WriteLine(ex.Message);
             }
