@@ -48,6 +48,10 @@
     <Compile Include="EisSample.cs" />
     <Compile Include="EventGenerator.cs" />
     <Compile Include="EventListener.cs" />
+    <Compile Include="Events\SampleRecievedEventArgs.cs" />
+    <Compile Include="Events\SessionStartEventArgs.cs" />
+    <Compile Include="Events\TransferCompleteEventArgs.cs" />
+    <Compile Include="Events\WarningEventArgs.cs" />
     <Compile Include="IBattery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleReader.cs" />

@@ -1,6 +1,7 @@
 ﻿using Common;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.ServiceModel;
@@ -19,24 +20,21 @@ namespace Service
         {
             _session.Files[path].Item1.Close();
             _session.Files[path].Item2.Close();
-            _eventGenerator.EndSession();
             Console.WriteLine($"End Session:\t{path.Substring(14)}");
         }
 
         public void PushSample(EisSample eisSample)
         {
-            Console.Write($"Session: {eisSample.File.Substring(14)}\t\t");
-            Console.WriteLine($"Tranfer initialized for sample no.{eisSample.RowIndex}...");
+            _eventGenerator.RecieveSample(ConfigurationManager.AppSettings["SampleRecieved"] + eisSample.RowIndex);
             Thread.Sleep(1000);
             _session.Write(eisSample);
-            Console.Write($"Session: {eisSample.File.Substring(14)}\t\t");
-            Console.WriteLine($"Transfer for sample no.{eisSample.RowIndex} complete!");
+           _eventGenerator.TransferComplete(ConfigurationManager.AppSettings["SampleComplete"] + eisSample.RowIndex);
             Thread.Sleep(500);
         }
 
         public string StartSession(EisMeta eisMeta)
         {
-            Console.Write("Starting Session:\t");
+            _eventGenerator.StartSession(ConfigurationManager.AppSettings["StartSession"]);
             string path = _session.RegisterMeta(eisMeta);
             Console.WriteLine(path.Substring(14));
             

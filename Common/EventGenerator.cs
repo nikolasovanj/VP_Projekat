@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.Events;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,24 +16,24 @@ namespace Common
         public event EventHandler OnTransferCompleted;
         public event EventHandler OnWarningRaised;
 
-        public void StartSession()
+        public void StartSession(string message)
         {
-            OnTransferStarted(this, EventArgs.Empty);
+            OnTransferStarted(this, new SessionStartEventArgs(message));
         }
 
-        public void RecieveSample()
+        public void RecieveSample(string message)
         {
-            OnSampleRecieved(this, EventArgs.Empty);
+            OnSampleRecieved(this, new SampleRecievedEventArgs(message));
         }
 
-        public void EndSession()
+        public void TransferComplete(string message)
         {
-            OnTransferCompleted(this, EventArgs.Empty);
+            OnTransferCompleted(this, new TransferCompleteEventArgs(message));
         }
 
-        public void Warning()
+        public void Warning(string message)
         {
-            OnWarningRaised(this, EventArgs.Empty);
+            OnWarningRaised(this, new WarningEventArgs(message));
         }
     }
 }
