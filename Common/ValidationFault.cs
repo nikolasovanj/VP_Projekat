@@ -8,13 +8,12 @@ using System.Threading.Tasks;
 namespace Common
 {
     [DataContract]
-    public class CustomException: Exception
+    public class ValidationFault : Exception
     {
         string message;
-
-        public CustomException(string message)
+        public ValidationFault(string message)
         {
-            this.Message = message;
+            this.Message = "Field " + message + " does not have a valid value.";
         }
 
         [DataMember]
