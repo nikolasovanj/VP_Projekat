@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.ServiceModel;
 using System.Text;
 using System.Threading;
@@ -34,13 +35,14 @@ namespace Client
                     for (int i = 0; i < meta.TotalRows-1; i++)
                     {
                         EisSample sample = sr.CreateSampleFromMeta(i, path);
+                        if (sample.RowIndex == -1) continue;
                         proxy.PushSample(sample);
                     }
 
                     proxy.EndSession(path);
                     sr.Dispose();
                 }
-                catch
+                catch (SocketException)
                 {
                     sr.Dispose();
                     Console.WriteLine("Server closed");
