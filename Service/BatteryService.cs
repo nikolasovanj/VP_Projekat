@@ -24,7 +24,7 @@ namespace Service
         {
             _session.Files[path].Item1.Close();
             _session.Files[path].Item2.Close();
-            Console.WriteLine($"End Session:\t{path.Substring(14)}");
+           _eventGenerator.TransferComplete(ConfigurationManager.AppSettings["EndSession"] + path.Substring(14));
         }
 
         public void PushSample(EisSample eisSample)
@@ -55,18 +55,15 @@ namespace Service
                         );
                 }
             }
-            Thread.Sleep(1000);
             _session.Write(eisSample);
-           _eventGenerator.TransferComplete(ConfigurationManager.AppSettings["SampleComplete"] + eisSample.RowIndex);
             Thread.Sleep(500);
             _temperature_previous = eisSample.T_degC;
         }
 
         public string StartSession(EisMeta eisMeta)
         {
-            _eventGenerator.StartSession(ConfigurationManager.AppSettings["StartSession"]);
             string path = _session.RegisterMeta(eisMeta);
-            Console.WriteLine(path.Substring(14));
+            _eventGenerator.StartSession(ConfigurationManager.AppSettings["StartSession"] + path.Substring(14));
             
             return path;
         }
