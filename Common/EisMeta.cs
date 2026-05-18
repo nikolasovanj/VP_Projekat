@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -31,6 +32,30 @@ namespace Common
             TotalRows = totalRows;
         }
 
+        private EisMeta(bool create)
+        {
+            if (create)
+            { 
+                string path = "../../../Dataset";
+                string[] dirs = Directory.GetDirectories(path);
+                Random rand = new Random(DateTime.UtcNow.Millisecond);
+                path = dirs[rand.Next(dirs.Length)];
+                BatteryId = path.Split('\\')[1];
+
+                dirs = Directory.GetDirectories(path + "/EIS measurements");
+                path = dirs[rand.Next(dirs.Length)];
+                TestId = path.Split('_')[1].Equals("1") ? Test.Test_1 : Test.Test_2;
+
+                string[] files = Directory.GetFiles(path + "/Hioki");
+                path = files[rand.Next(files.Length)];
+                TotalRows = File.ReadLines(path).Count();
+
+                FileName = path.Split('\\')[3];
+
+                SoC = int.Parse(FileName.Split('_')[3]);
+            }
+        }
+
         [DataMember]
         public string BatteryId { get => batteryId; set => batteryId = value; }
         [DataMember]
@@ -41,5 +66,10 @@ namespace Common
         public string FileName { get => fileName; set => fileName = value; }
         [DataMember]
         public int TotalRows { get => totalRows; set => totalRows = value; }
+
+        public static EisMeta CreateMeta()
+        {
+            return new EisMeta(true);  
+        }
     }
 }

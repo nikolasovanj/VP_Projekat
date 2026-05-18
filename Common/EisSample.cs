@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,37 +12,124 @@ namespace Common
     [DataContract]
     public class EisSample
     {
-        int rowIndex = 1;
+        int rowIndex = -1;
         float frequencyHz;
         float r_ohm;
         float x_ohm;
+        float v;
         int t_degC;
-        int range_ohm;
+        float range_ohm;
         DateTime timestampLocal;
+        string file;
 
-        public EisSample(int rowIndex, float frequencyHz, float r_ohm, float x_ohm, int degC, int range_ohm, DateTime timestampLocal)
+        public EisSample() { }
+
+        public EisSample(int rowIndex, float frequencyHz, float r_ohm, float x_ohm, float v, int degC, float range_ohm, DateTime timestampLocal)
         {
             RowIndex = rowIndex;
             FrequencyHz = frequencyHz;
             R_ohm = r_ohm;
             X_ohm = x_ohm;
+            V = v;
             T_degC = degC;
             Range_ohm = range_ohm;
             TimestampLocal = timestampLocal;
         }
+
+        private EisSample(int row, string line)
+        {
+            string[] parts = line.Split(',');
+            RowIndex = row;
+            float temp;
+            if (float.TryParse(parts[0], out temp)){ FrequencyHz = temp; }else{ throw new DataFormatFault("FrequencyHz"); }
+            if (float.TryParse(parts[1], out temp)) { R_ohm = temp; } else { throw new DataFormatFault("R_ohm"); }
+            if (float.TryParse(parts[2], out temp)) { X_ohm = temp; } else { throw new DataFormatFault("X_ohm"); }
+            if (float.TryParse(parts[3], out temp)) { V = temp; } else { throw new DataFormatFault("V"); }
+            if (float.TryParse(parts[4], out temp)) { T_degC = (int)temp; } else { throw new DataFormatFault("T_degC"); }
+            if (float.TryParse(parts[5], out temp)) { Range_ohm = (int)temp; } else { throw new DataFormatFault("Range_ohm"); }
+            TimestampLocal = DateTime.Now;
+        }
+
         [DataMember]
         public int RowIndex { get => rowIndex; set => rowIndex = value; }
         [DataMember]
-        public float FrequencyHz { get => frequencyHz; set => frequencyHz = value; }
+        public float FrequencyHz { get => frequencyHz; set
+            {
+                if (value <= 0)
+                {
+                    throw new ValidationFault("FrequencyHz");
+                }
+                frequencyHz = value;
+            }
+        }
         [DataMember]
-        public float R_ohm { get => r_ohm; set => r_ohm = value; }
+        public float R_ohm { get => r_ohm; set {
+                double R_ohm_min = 0.01;
+                double R_ohm_max = 2.5;
+                if(R_ohm_min > value || R_ohm_max < value)
+                {
+                    throw new ValidationFault("R_ohm");
+                }
+                r_ohm = value; 
+            } 
+        }
         [DataMember]
         public float X_ohm { get => x_ohm; set => x_ohm = value; }
         [DataMember]
+        public float V { get => v; set => v = value; }
+        [DataMember]
         public int T_degC { get => t_degC; set => t_degC = value; }
         [DataMember]
-        public int Range_ohm { get => range_ohm; set => range_ohm = value; }
+        public float Range_ohm { get => range_ohm; set => range_ohm = value; }
         [DataMember]
         public DateTime TimestampLocal { get => timestampLocal; set => timestampLocal = value; }
+        [DataMember]
+        public string File { get => file; set => file = value; }
+
+        private bool disposed = false;
+        ~EisSample()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                disposed = true;
+            }
+        }
+        public static EisSample CreateSample(int row, string line)
+        {
+            EisSample sample = new EisSample();
+            try
+            {
+                sample = new EisSample(row, line);
+            }
+            catch (DataFormatFault ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            catch (ValidationFault ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return sample;
+        }
+
+        public string ToCSV()
+        {
+            return $"{RowIndex},{FrequencyHz},{R_ohm},{X_ohm},{V},{T_degC},{Range_ohm},{TimestampLocal}\n";
+        }
+        public string ToCSVHeader()
+        {
+            return $"{nameof(RowIndex)},{nameof(FrequencyHz)},{nameof(R_ohm)},{nameof(X_ohm)},{nameof(V)},{nameof(T_degC)},{nameof(Range_ohm)},{nameof(TimestampLocal)}\n";
+        }
     }
 }

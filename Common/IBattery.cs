@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.ServiceModel;
 using System.Text;
@@ -11,10 +12,10 @@ namespace Common
     public interface IBattery
     {
         [OperationContract]
-        void StartSession(EisMeta eisMeta);
+        string StartSession(EisMeta eisMeta);
         [OperationContract]
         void PushSample(EisSample eisSample);
         [OperationContract]
-        void EndSession();
+        void EndSession(string path);
     }
 }
