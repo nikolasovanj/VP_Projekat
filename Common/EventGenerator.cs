@@ -14,8 +14,7 @@ namespace Common
         public event EventHandler OnTransferStarted;
         public event EventHandler OnSampleRecieved;
         public event EventHandler OnTransferCompleted;
-        public event EventHandler OnWarningRaised;
-
+        public event EventHandler OnTemperatureSpike;
         public void StartSession(string message)
         {
             OnTransferStarted(this, new SessionStartEventArgs(message));
@@ -31,9 +30,9 @@ namespace Common
             OnTransferCompleted(this, new TransferCompleteEventArgs(message));
         }
 
-        public void Warning(string message)
+        public void TemperatureSpike(string message)
         {
-            OnWarningRaised(this, new WarningEventArgs(message));
+            OnTemperatureSpike(this, new WarningEventArgs(message));
         }
     }
 }

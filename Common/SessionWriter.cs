@@ -17,9 +17,6 @@ namespace Common
         private readonly double _R_range_min = 0.2;
         private readonly double _R_range_max = 3.5;
 
-        private readonly double _temperature_difference_max = 3;
-        private double _temperature_previous = -1;
-
         public Dictionary<string, Tuple<FileStream, FileStream>> Files { get { return files; } }
         public SessionWriter()
         {
