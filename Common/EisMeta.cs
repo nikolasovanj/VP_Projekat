@@ -69,7 +69,7 @@ namespace Common
 
         public static EisMeta CreateMeta()
         {
-            return new EisMeta(true);   
+            return new EisMeta(true);  
         }
     }
 }
