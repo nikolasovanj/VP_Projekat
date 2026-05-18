@@ -30,7 +30,8 @@ namespace Service
         public void PushSample(EisSample eisSample)
         {
             _eventGenerator.RecieveSample(ConfigurationManager.AppSettings["SampleRecieved"] + eisSample.RowIndex);
-            if(_temperature_previous == -999)
+            string soc = eisSample.File.Split('/')[6];
+            if (_temperature_previous == -999)
             {
                 _temperature_previous = eisSample.T_degC;
             }
@@ -38,10 +39,20 @@ namespace Service
             {
                 if(eisSample.T_degC - _temperature_previous > _temperature_difference_max)
                 {
-                    _eventGenerator.TemperatureSpike("raising");
+                    _eventGenerator.TemperatureSpike("Raising temperature. " +
+                        "Temperature: " + eisSample.T_degC + 
+                        ", Difference: " + (eisSample.T_degC - _temperature_previous) + 
+                        ", Frequency: " + eisSample.FrequencyHz + 
+                        ", SoC: " + soc
+                        );
                 }
                 else if(eisSample.T_degC - _temperature_previous < -1 * _temperature_difference_max){
-                    _eventGenerator.TemperatureSpike("falling");
+                    _eventGenerator.TemperatureSpike("Ralling temperature. " 
+                        + "Temperature: " + eisSample.T_degC +
+                        ", Difference: " + (eisSample.T_degC - _temperature_previous) +
+                        ", Frequency: " + eisSample.FrequencyHz +
+                        ", SoC: " + soc
+                        );
                 }
             }
             Thread.Sleep(1000);

@@ -69,15 +69,7 @@ namespace Common
 
         public static EisMeta CreateMeta()
         {
-            try
-            {
-                return new EisMeta(true);
-            }
-            catch (CustomException ex)
-            {
-                Console.WriteLine(ex.Message);
-                return new EisMeta(false);
-            }
+            return new EisMeta(true);  
         }
     }
 }
