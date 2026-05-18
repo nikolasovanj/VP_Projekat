@@ -12,7 +12,7 @@ namespace Common
     [DataContract]
     public class EisSample
     {
-        int rowIndex = 1;
+        int rowIndex = -1;
         float frequencyHz;
         float r_ohm;
         float x_ohm;
@@ -66,7 +66,7 @@ namespace Common
         public float R_ohm { get => r_ohm; set {
                 double R_ohm_min = 0.01;
                 double R_ohm_max = 2.5;
-                if(R_ohm_min > value || R_ohm_max > value)
+                if(R_ohm_min > value || R_ohm_max < value)
                 {
                     throw new ValidationFault("R_ohm");
                 }

@@ -49,6 +49,10 @@ namespace Service
         }
         public void Close()
         {
+            _eventGenerator.OnTransferStarted -= _listener.HandleEvent;
+            _eventGenerator.OnSampleRecieved -= _listener.HandleEvent;
+            _eventGenerator.OnTransferCompleted -= _listener.HandleEvent;
+            _eventGenerator.OnWarningRaised -= _listener.HandleEvent;
             _session.Dispose();
         }
     }
