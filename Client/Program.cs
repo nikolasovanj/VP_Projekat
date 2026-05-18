@@ -42,7 +42,7 @@ namespace Client
                     proxy.EndSession(path);
                     sr.Dispose();
                 }
-                catch (SocketException)
+                catch (Exception)
                 {
                     sr.Dispose();
                     Console.WriteLine("Server closed");

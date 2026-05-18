@@ -17,7 +17,7 @@ namespace Service
         private static EventGenerator _eventGenerator = new EventGenerator();
         private static EventListener _listener = new EventListener();
 
-        private readonly double _temperature_difference_max = 3;
+        private readonly double _temperature_difference_max = double.Parse(ConfigurationManager.AppSettings["T_threshold"]);
         private double _temperature_previous = -999;
 
         public void EndSession(string path)
@@ -71,7 +71,7 @@ namespace Service
             _eventGenerator.OnTransferStarted -= _listener.HandleEvent;
             _eventGenerator.OnSampleRecieved -= _listener.HandleEvent;
             _eventGenerator.OnTransferCompleted -= _listener.HandleEvent;
-            _eventGenerator.OnWarningRaised -= _listener.HandleEvent;
+            _eventGenerator.OnTemperatureSpike -= _listener.HandleEvent;
             _session.Dispose();
         }
     }
